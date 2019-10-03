@@ -30,7 +30,9 @@ A "poet" in this instance is a generative automatic poet that writes and edits t
 
 - pyttsx can do TTS with eSpeak on Linux
 - Bring the text into SuperCollider and put it through filters and delay networks based on the text of the poem.
+- Each word is a sonification command.
 
 ## Poem structure
 
 12 lines for 12 sensors
+
