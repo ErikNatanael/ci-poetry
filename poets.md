@@ -28,3 +28,7 @@ A "poet" in this instance is a generative automatic poet that writes and edits t
 - Using NLTK? https://www.digitalocean.com/community/tutorials/how-to-work-with-language-data-in-python-3-using-the-natural-language-toolkit-nltk
 
 ## Sonification of the poem
+
+## Poets visualization + QR codes
+Make a Qr code for each poet saying "scan this code to see what you're doing"
+Each QR code will link to a visual representation of the poem and what they are doing to it.
