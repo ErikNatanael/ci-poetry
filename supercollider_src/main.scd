@@ -1,12 +1,16 @@
 (
-~wordList = [];
+~wordList = ["computer", "night", "git", "far", "away", "get", "got", "gat", "stream", "fall"];
 ~masterPoemLocked = false; // is set to true while a poet is committing a change to the master poem
+~masterPoemPath = "master/poem.txt".resolveRelative;
 )
 
 // Receive serial data
 (
 var port = SerialPort.devices[0], // get the first serial device, assuming our device is the only one connected
+p;
+SerialPort.closeAll(); // make sure all ports are closed before trying to open a new one
 // open a connection to the port specified above
+// throws an error if the port cannot be opened: ERROR: Primitive '_SerialPort_Open' failed.
 p = SerialPort(
 	port,
 	baudrate: 115200,
@@ -28,6 +32,7 @@ p = SerialPort(
 
 			values = str.split($ ); // split the string into a list of values
 			sensors = values.collect{ |val| val.asInteger; }; // convert from strings to integer numbers
+			sensors.postln;
 
 			// update the state of all the sensors
 		});
@@ -40,13 +45,41 @@ p = SerialPort(
 ~touchThreshold = 2000;
 ~delayUntilCommit = 3.0; // number of seconds of no touching until a change is committed to the master poem
 
+// ----------------------------------------------------------- EDIT ACTIONS
+
+~addWord = { | poem, lineNumber, wordList |
+	var lines, words, addPosition, lineString = "";
+	// split poem into lines
+	lines = poem.split($\n);
+	("lines: " + lines).postln;
+	words = lines[lineNumber].split($ );
+	("words: " + words).postln;
+	addPosition = rrand(0, words.size).floor(); // get random position where the word will be inserted
+	words = words.insert(addPosition, wordList.choose()); // insert word into list
+	// turn everything back into a flat string
+	words.do{|word| lineString = lineString ++ word ++ " "; };
+	("lineString: " + lineString).postln;
+	lines[lineNumber] = lineString;
+	poem = "";
+	lines.do{|line| poem = poem ++ line ++"\n"; };
+	poem
+};
+
+
+// ----------------------------------------------------------- POET FACTORY
+
 // a pseudo-object factory to store poet info
 ~createPoet = { |index, wordList|
+	var folder = ("poet" ++ index.asString ++ "/").resolveRelative;
+	File.mkdir(folder); // creates the folder if it doesn't exist
 	( // create an Event similar to a javascript object
 		// ----------------- variables
 		index: index,
 		wordList: wordList,
+		editActions: [~addWord], // a list of functions that
 		poem: "", // the local version of the poem as edited by this poet
+		localMaster: "", // the master version of the poem when this iteration of edits began
+		folder: folder,
 		active: false, // if the sensor is currently used for an active sequence i.e. has changes that have not been committed to master
 		touched: false, // if the sensor is in the touched state
 		touchStart: 0, // timestamp for when it last touched
@@ -60,6 +93,10 @@ p = SerialPort(
 				if(self.touched != true) {
 					self.touched = true;
 					self.touchStart = ~now.();
+					if(self.active != true) {
+						self.active = true;
+						self.startSequence();
+					};
 				};
 			}, {
 				// the sensor is not being touched
@@ -87,17 +124,32 @@ p = SerialPort(
 				};
 			};
 		},
-		startSequence: { | self |
+		startSequence: { | self | var masterPoem, localMasterFile;
 			// copy file from master poem into its own copy of the file
-			// read that copy into memory
+			masterPoem = File.readAllString(~masterPoemPath);
+			("masterPoem: " + masterPoem).postln;
+			localMasterFile = File.open(self.folder + "mastercopy.txt", "w"); // open a file and erase whatever might be in it
+			localMasterFile.write(masterPoem);
+			localMasterFile.close();
+			self.localMaster = masterPoem; // save for later to avoid having to read it from file again
+			self.poem = masterPoem; // initialise to the master poem
+			self.savePoemToFile(); // bring the file up to date
 
 			// set to active
 			self.active = true;
 		},
 		editPoem: { | self, timeTouched |
+			var editAction;
 			// apply a change to the poem
-
+			editAction = self.editActions.choose;
+			// perform the edit and store the result back into self.poem
+			self.poem = editAction.value(self.poem, self.index, self.wordList);
 			// write the updated version to file
+			self.savePoemToFile();
+		},
+		savePoemToFile: { | self | var file;
+			// save this poet's version of the poem
+			File.use(self.folder + "poem.txt", "w", { |f| f.write(self.poem) });
 		},
 	)
 };
@@ -127,5 +179,30 @@ p = SerialPort(
 
 	// trigger a new sonification if the commit passed
 };
+
+// ----------------------------------------------------------- INITIALISE
+
+// create all the poets
+~poets = 12.collect{ | i | ~createPoet.(i, ~wordList) };
+
+// run poet update loop
+{
+	~poets.do( { |poet| poet.update(); } );
+	0.1.wait;
+}.fork;
+)
+
+// =========================================================== PLAYGROUND / TESTING
+(
+~simulateTouch = { |index, delayTime|
+	{
+		~poets[index].updateState(~touchThreshold);
+		delayTime.wait;
+		~poets[index].updateState(0);
+	}.fork
+};
+)
+(
+~simulateTouch.(0, 0.5);
 )
 
