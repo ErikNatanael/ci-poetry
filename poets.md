@@ -11,24 +11,28 @@ A "poet" in this instance is a generative automatic poet that writes and edits t
 - Adds 1 line break within a sentence.
 - Adds 2x4 spaces anywhere.
 
+- Adds a noun after a different noun. The nouns have to be close in association.
 
 ## Subtractive poets
 
 - Removes 2 random words (not including punctuation).
 - Removes a sentence from the beginning of the poem.
 - Removes the middle of a sentence and add a semicolon
-- Removes 
+- Changes a verb to a different verb.
+- 
 
 
 ## Rules for determining if the poem passes or fails
 
-- Correct punctuation?
-- A few fail characteristics:
-  - No punctuation before a capital letter except for words that normally start with a capital letter?
-- Using NLTK? https://www.digitalocean.com/community/tutorials/how-to-work-with-language-data-in-python-3-using-the-natural-language-toolkit-nltk
+- If two agents try to change the same thing (line or word) the merge fails.
 
 ## Sonification of the poem
 
-## Poets visualization + QR codes
-Make a Qr code for each poet saying "scan this code to see what you're doing"
-Each QR code will link to a visual representation of the poem and what they are doing to it.
+- pyttsx can do TTS with eSpeak on Linux
+- Bring the text into SuperCollider and put it through filters and delay networks based on the text of the poem.
+- Each word is a sonification command.
+
+## Poem structure
+
+12 lines for 12 sensors
+
