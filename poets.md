@@ -26,6 +26,7 @@ A "poet" in this instance is a generative automatic poet that writes and edits t
 
 - If two agents try to change the same thing (line or word) the merge fails.
 
+Use diff or home brewed solution?
 
 ## Poem structure
 
