@@ -127,7 +127,7 @@ p = SerialPort(
 		startSequence: { | self | var masterPoem, localMasterFile;
 			// copy file from master poem into its own copy of the file
 			masterPoem = File.readAllString(~masterPoemPath);
-			localMasterFile = File.open(self.folder + "mastercopy.txt", "w"); // open a file and erase whatever might be in it
+			localMasterFile = File.open(self.folder ++ "mastercopy.txt", "w"); // open a file and erase whatever might be in it
 			localMasterFile.write(masterPoem);
 			localMasterFile.close();
 			self.localMaster = masterPoem; // save for later to avoid having to read it from file again
@@ -148,7 +148,7 @@ p = SerialPort(
 		},
 		savePoemToFile: { | self | var file;
 			// save this poet's version of the poem
-			File.use(self.folder + "poem.txt", "w", { |f| f.write(self.poem) });
+			File.use(self.folder ++ "poem.txt", "w", { |f| f.write(self.poem) });
 		},
 	)
 };
