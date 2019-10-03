@@ -1,4 +1,4 @@
-far get away stream far One stream   fall     
+stream One 
 Two
 Three
 Four
@@ -10,9 +10,3 @@ Nine
 Ten
 Eleven
 Twelve
-
-
-
-
-
-

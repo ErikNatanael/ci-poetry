@@ -110,7 +110,7 @@ p = SerialPort(
 			});
 		},
 		// called at a set time interval
-		update: { | self |
+		updatePoet: { | self |
 			if(self.active) {
 				if(self.touched != true) {
 					var now = ~now.();
@@ -127,7 +127,6 @@ p = SerialPort(
 		startSequence: { | self | var masterPoem, localMasterFile;
 			// copy file from master poem into its own copy of the file
 			masterPoem = File.readAllString(~masterPoemPath);
-			("masterPoem: " + masterPoem).postln;
 			localMasterFile = File.open(self.folder + "mastercopy.txt", "w"); // open a file and erase whatever might be in it
 			localMasterFile.write(masterPoem);
 			localMasterFile.close();
@@ -160,11 +159,14 @@ p = SerialPort(
 // as separate function to allow us to use a different method later
 ~now = { SystemClock.seconds; };
 
-~commitChange = { | poet |
+~commitChange = { | poet | var diff;
 	// lock the master file for changes (to avoid a race condition where two poets could try to commit a change simultaneously)
 	~masterPoemLocked = true;
 	// check for conflicts between local sensor version and master
 	// If another poet has already edited a line which this poet edits, the commit fails. Otherwise it passes.
+
+	diff = ("diff " ++ ~masterPoemPath + poet.folder ++ "poem.txt").unixCmdGetStdOut;
+	("diff: " ++ diff).postln;
 
 	// if the commit passes:
 	// merge with master by transferring the changes this poet has made to those lines in the master poem
@@ -187,8 +189,10 @@ p = SerialPort(
 
 // run poet update loop
 {
-	~poets.do( { |poet| poet.update(); } );
-	0.1.wait;
+	loop {
+		~poets.do( { |poet| poet.updatePoet(); } );
+		0.1.wait;
+	}
 }.fork;
 )
 
@@ -205,4 +209,4 @@ p = SerialPort(
 (
 ~simulateTouch.(0, 0.5);
 )
-
+~poets[0].active
