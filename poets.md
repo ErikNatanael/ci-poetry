@@ -24,16 +24,13 @@ A "poet" in this instance is a generative automatic poet that writes and edits t
 
 ## Rules for determining if the poem passes or fails
 
-- Correct punctuation?
-- A few fail characteristics:
-  - No punctuation before a capital letter except for words that normally start with a capital letter?
-- Using NLTK? https://www.digitalocean.com/community/tutorials/how-to-work-with-language-data-in-python-3-using-the-natural-language-toolkit-nltk
-- https://www.codeproject.com/Articles/11835/WordNet-based-semantic-similarity-measurement
-  - Count parts of speech and make sure there is a balance between nouns and adjectives?
-- Text classification using spaCy and Keras https://spacy.io/usage/examples
-- Enough sentences must be positive or negative?
-- The total semantic distance between sentences cannot be too large. (https://spacy.io/usage/vectors-similarity)
+- If two agents try to change the same thing (line or word) the merge fails.
 
 ## Sonification of the poem
 
 - pyttsx can do TTS with eSpeak on Linux
+- Bring the text into SuperCollider and put it through filters and delay networks based on the text of the poem.
+
+## Poem structure
+
+12 lines for 12 sensors
