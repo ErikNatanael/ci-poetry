@@ -159,28 +159,65 @@ p = SerialPort(
 // as separate function to allow us to use a different method later
 ~now = { SystemClock.seconds; };
 
-~commitChange = { | poet | var diff;
+~commitChange = { | poet | var commitPasses = true, editedLines = List[], poetLines, localMasterLines, masterLines, masterPoem, masterDiffLines = Set[];
 	// lock the master file for changes (to avoid a race condition where two poets could try to commit a change simultaneously)
 	~masterPoemLocked = true;
 	// check for conflicts between local sensor version and master
 	// If another poet has already edited a line which this poet edits, the commit fails. Otherwise it passes.
 
-	diff = ("diff " ++ ~masterPoemPath + poet.folder ++ "poem.txt").unixCmdGetStdOut;
-	("diff: " ++ diff).postln;
+	masterPoem = File.readAllString(~masterPoemPath);
+	masterLines = masterPoem.split($\n);
 
-	// if the commit passes:
-	// merge with master by transferring the changes this poet has made to those lines in the master poem
+	poetLines = poet.poem.split($\n);
+	localMasterLines = poet.localMaster.split($\n); // the lines in the copy of the master made when beginning edits
 
-	// save master poem to disk
+	// get which lines were edited by this poet
+	localMasterLines.size.do { |i|
+		if(localMasterLines[i] != poetLines[i]) {
+			editedLines.add(i);
+		};
+	};
+	("editedLines: " + editedLines).postln;
 
-	// if the commit fails:
-	// play a "commit failed" sound
+	// what lines have changed in the masterPoem compared to the local version
+
+	localMasterLines.size.do { |i|
+		if(localMasterLines[i] != masterLines[i]) {
+			masterDiffLines.add(i);
+		};
+	};
+
+	// have any of the lines edited by this poet been changed in master?
+	editedLines.do { |linenr|
+		if(masterDiffLines.findMatch(editedLines[linenr]) != nil) {
+			// line has been changed in master, fail the merge
+			commitPasses = false;
+		};
+	};
+
+	if(commitPasses, {
+		// if the commit passes:
+		// merge with master by transferring the changes this poet has made to those lines in the master poem
+		("SUCCESS: commit from poet" + poet.index + "succeeded").postln;
+		editedLines.do{ |linenr|
+			masterLines[linenr] = poetLines[linenr];
+		};
+		masterPoem = "";
+		masterLines.do{|line| masterPoem = masterPoem ++ line ++"\n"; };
+		// save master poem to disk
+		File.use(~masterPoemPath, "w", { |f| f.write(masterPoem) });
+		// trigger a new sonification if the commit passed
+	}, {
+
+		// if the commit fails:
+		// play a "commit failed" sound
+		("FAILED: commit from poet" + poet.index + "failed").postln;
+	});
 
 	// unlock the master poem lock
 	~masterPoemLocked = false;
-
-	// trigger a new sonification if the commit passed
 };
+
 
 // ----------------------------------------------------------- INITIALISE
 
@@ -207,6 +244,7 @@ p = SerialPort(
 };
 )
 (
-~simulateTouch.(0, 0.5);
+~simulateTouch.(2, 0.5);
+~simulateTouch.(3, 2);
 )
 ~poets[0].active
