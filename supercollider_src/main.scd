@@ -51,14 +51,14 @@ p = SerialPort(
 	var lines, words, addPosition, lineString = "";
 	// split poem into lines
 	lines = poem.split($\n);
-	("lines: " + lines).postln;
+	//("lines: " + lines).postln;
 	words = lines[lineNumber].split($ );
-	("words: " + words).postln;
+	//("words: " + words).postln;
 	addPosition = rrand(0, words.size).floor(); // get random position where the word will be inserted
 	words = words.insert(addPosition, wordList.choose()); // insert word into list
 	// turn everything back into a flat string
 	words.do{|word| lineString = lineString ++ word ++ " "; };
-	("lineString: " + lineString).postln;
+	//("lineString: " + lineString).postln;
 	lines[lineNumber] = lineString;
 	poem = "";
 	lines.do{|line| poem = poem ++ line ++"\n"; };
@@ -177,10 +177,8 @@ p = SerialPort(
 			editedLines.add(i);
 		};
 	};
-	("editedLines: " + editedLines).postln;
 
 	// what lines have changed in the masterPoem compared to the local version
-
 	localMasterLines.size.do { |i|
 		if(localMasterLines[i] != masterLines[i]) {
 			masterDiffLines.add(i);
@@ -189,13 +187,13 @@ p = SerialPort(
 
 	// have any of the lines edited by this poet been changed in master?
 	editedLines.do { |linenr|
-		if(masterDiffLines.findMatch(editedLines[linenr]) != nil) {
+		if(masterDiffLines.findMatch(linenr) != nil) {
 			// line has been changed in master, fail the merge
 			commitPasses = false;
 		};
 	};
 
-	if(commitPasses, {
+	if(commitPasses == true, {
 		// if the commit passes:
 		// merge with master by transferring the changes this poet has made to those lines in the master poem
 		("SUCCESS: commit from poet" + poet.index + "succeeded").postln;
@@ -244,7 +242,15 @@ p = SerialPort(
 };
 )
 (
-~simulateTouch.(2, 0.5);
-~simulateTouch.(3, 2);
+fork{
+	~simulateTouch.(2, 10);
+	10.wait;
+	~simulateTouch.(2, 1);
+}
 )
 ~poets[0].active
+
+(
+var set = Set[2];
+set.findMatch(2);
+)
