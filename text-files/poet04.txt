@@ -1,0 +1,5 @@
+before scope
+if human
+out of bound
+syntax error
+computational artifact
