@@ -1,9 +1,0 @@
-cascading style sheet
-application program interface
-cyan magenta yellow black
-central processing unit
-dynamic host configuration protocol
-hyperText transport protocol secure
-structured query language
-virtual private network
-continuous integration
