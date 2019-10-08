@@ -5,6 +5,7 @@ from osc4py3 import oscbuildparse
 # Import Adafruit MPR121 stuff
 import board
 import busio
+import time
 # Import MPR121 module.
 import adafruit_mpr121
 
