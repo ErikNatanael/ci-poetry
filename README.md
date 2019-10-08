@@ -1,7 +1,9 @@
 # Generative poetry based on CI
 
 ## Arduino
-Requires libraries [Adafruit_MPR121](https://github.com/adafruit/Adafruit_MPR121) and [CapacitiveSensor](https://playground.arduino.cc/Main/CapacitiveSensor/)
+TESTS: Requires libraries [Adafruit_MPR121](https://github.com/adafruit/Adafruit_MPR121) and [CapacitiveSensor](https://playground.arduino.cc/Main/CapacitiveSensor/)
+
+Using Raspberry Pi 4: [Adafruit_MPR121](https://circuitpython.readthedocs.io/projects/mpr121/en/latest/index.html)
 
 ## Notes for its creation
 
