@@ -40,6 +40,18 @@ p = SerialPort(
 };
 )
 
+// Receive via OSC
+
+(
+o = OSCFunc({
+	arg msg, time, addr, recvPort;
+	[msg, time, addr, recvPort].postln;
+
+	~poets[msg[1]].updateState(msg[2]);
+
+}, '/touched', nil, 7771);
+)
+
 
 (
 ~touchThreshold = 2000;
