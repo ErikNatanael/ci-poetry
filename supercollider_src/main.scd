@@ -1,8 +1,3 @@
-(
-~wordList = ["computer", "night", "git", "far", "away", "get", "got", "gat", "stream", "fall"];
-~masterPoemLocked = false; // is set to true while a poet is committing a change to the master poem
-~masterPoemPath = "master/poem.txt".resolveRelative;
-)
 
 // Receive serial data
 (
@@ -54,13 +49,16 @@ o = OSCFunc({
 
 
 (
+~wordList = ["computer", "night", "git", "far", "away", "get", "got", "gat", "stream", "fall"];
+~masterPoemLocked = false; // is set to true while a poet is committing a change to the master poem
+~masterPoemPath = "master/poem.txt".resolveRelative;
 ~touchThreshold = 2000;
 ~delayUntilCommit = 3.0; // number of seconds of no touching until a change is committed to the master poem
 
 // ----------------------------------------------------------- EDIT ACTIONS
 
-~addWord = { | poem, lineNumber, wordList |
-	var lines, words, addPosition, lineString = "";
+~addWord = { | poet |
+	var lines, words, addPosition, lineString = "", wordList = poet.wordList, poem = poet.poem, lineNumber = poet.index;
 	// split poem into lines
 	lines = poem.split($\n);
 	//("lines: " + lines).postln;
@@ -77,18 +75,33 @@ o = OSCFunc({
 	poem
 };
 
+~replaceRandomLine = { | poet |
+	var poetLines, masterLines, fromIndex, toIndex, poem;
+	poetLines = poet.personalPoem.split($\n);
+	masterLines = poet.poem.split($\n);
+	toIndex = rrand(0, masterLines.size-1); // integer between 0 and masterLines.size-1 inclusive
+	masterLines[toIndex] = poetLines.choose;
+	poem = "";
+	masterLines.do{|line| poem = poem ++ line ++"\n"; };
+	poem
+};
+
 
 // ----------------------------------------------------------- POET FACTORY
 
 // a pseudo-object factory to store poet info
 ~createPoet = { |index, wordList|
-	var folder = ("poet" ++ index.asString ++ "/").resolveRelative;
+	var folder = ("poet" ++ index.asString ++ "/").resolveRelative, personalPoem;
 	File.mkdir(folder); // creates the folder if it doesn't exist
+	// load the poem specific to this poet
+	personalPoem = File.readAllString(("../text-files/poet"++(index%7).asString++".txt").resolveRelative);
+	postln(personalPoem);
 	( // create an Event similar to a javascript object
 		// ----------------- variables
 		index: index,
 		wordList: wordList,
-		editActions: [~addWord], // a list of functions that
+		personalPoem: personalPoem,
+		editActions: [~replaceRandomLine], // a list of functions that
 		poem: "", // the local version of the poem as edited by this poet
 		localMaster: "", // the master version of the poem when this iteration of edits began
 		folder: folder,
@@ -137,6 +150,7 @@ o = OSCFunc({
 			};
 		},
 		startSequence: { | self | var masterPoem, localMasterFile;
+			"Start sequence".postln;
 			// copy file from master poem into its own copy of the file
 			masterPoem = File.readAllString(~masterPoemPath);
 			localMasterFile = File.open(self.folder ++ "mastercopy.txt", "w"); // open a file and erase whatever might be in it
@@ -151,10 +165,11 @@ o = OSCFunc({
 		},
 		editPoem: { | self, timeTouched |
 			var editAction;
+			("Poet " ++ self.index ++ " edits its poem").postln;
 			// apply a change to the poem
 			editAction = self.editActions.choose;
 			// perform the edit and store the result back into self.poem
-			self.poem = editAction.value(self.poem, self.index, self.wordList);
+			self.poem = editAction.value(self);
 			// write the updated version to file
 			self.savePoemToFile();
 		},
@@ -255,8 +270,8 @@ o = OSCFunc({
 )
 (
 fork{
-	~simulateTouch.(2, 10);
-	10.wait;
+	~simulateTouch.(2, 0.5);
+	1.wait;
 	~simulateTouch.(2, 1);
 }
 )
@@ -266,3 +281,4 @@ fork{
 var set = Set[2];
 set.findMatch(2);
 )
+	
