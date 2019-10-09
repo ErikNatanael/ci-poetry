@@ -19,3 +19,10 @@ Start with 12 lines
 - mjuka ljud, bakgrund mest
 - mjuk klocka när man gör något som fejdar ut och så kommer dikten tillbaka som ljud > <
 - dikten väldigt bakgrundig när ingen interagerar
+
+
+
+
+Use only variations of the same major (or possibly minor) chord where notes are placed in different octaves.
+Vary the amount of activity within the chord
+Empty lines have only the root note

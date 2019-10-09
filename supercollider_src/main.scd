@@ -122,6 +122,8 @@ o = OSCFunc({
 						self.active = true;
 						self.startSequence();
 					};
+					// sonify it
+					~sonifyTouch.();
 				};
 			}, {
 				// the sensor is not being touched
@@ -153,6 +155,7 @@ o = OSCFunc({
 			"Start sequence".postln;
 			// copy file from master poem into its own copy of the file
 			masterPoem = File.readAllString(~masterPoemPath);
+			~masterPoemText = masterPoem; // keep the master poem text up to date
 			localMasterFile = File.open(self.folder ++ "mastercopy.txt", "w"); // open a file and erase whatever might be in it
 			localMasterFile.write(masterPoem);
 			localMasterFile.close();
@@ -228,10 +231,18 @@ o = OSCFunc({
 			masterLines[linenr] = poetLines[linenr];
 		};
 		masterPoem = "";
-		masterLines.do{|line| masterPoem = masterPoem ++ line ++"\n"; };
+		masterLines.size.do{|index|
+			masterPoem = masterPoem ++ masterLines[index];
+			// only add the new line if it's not the last line of the poem
+			if(index != (masterLines.size-1)) {
+				masterPoem = masterPoem ++"\n"
+			};
+		};
 		// save master poem to disk
 		File.use(~masterPoemPath, "w", { |f| f.write(masterPoem) });
+		~masterPoemText = masterPoem;
 		// trigger a new sonification if the commit passed
+		~updatePoemSonification.();
 	}, {
 
 		// if the commit fails:
@@ -256,6 +267,9 @@ o = OSCFunc({
 		0.1.wait;
 	}
 }.fork;
+
+// initialise sonification
+"sonification.scd".loadRelative;
 )
 
 // =========================================================== PLAYGROUND / TESTING
@@ -270,9 +284,16 @@ o = OSCFunc({
 )
 (
 fork{
-	~simulateTouch.(2, 0.5);
+	~simulateTouch.(rrand(0, 11), 0.5);
 	1.wait;
-	~simulateTouch.(2, 1);
+}
+)
+(// loop of random touches
+fork{
+	loop{
+		~simulateTouch.(rrand(0, 11), 0.5);
+		1.wait;
+	}
 }
 )
 ~poets[0].active
