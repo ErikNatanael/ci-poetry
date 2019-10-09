@@ -35,21 +35,6 @@ p = SerialPort(
 };
 )
 
-// Receive via OSC
-
-(
-o = OSCFunc({
-	arg msg, time, addr, recvPort;
-	[msg, time, addr, recvPort].postln;
-
-	if(msg[4], {
-		~poets[msg[1]].updateState(true);
-	}, {
-		~poets[msg[1]].updateState(false);
-	});
-
-}, '/touched', nil, 7771);
-)
 
 
 (
@@ -98,7 +83,7 @@ o = OSCFunc({
 	var folder = ("poet" ++ index.asString ++ "/").resolveRelative, personalPoem;
 	File.mkdir(folder); // creates the folder if it doesn't exist
 	// load the poem specific to this poet
-	personalPoem = File.readAllString(("../text-files/poet"++(index%7).asString++".txt").resolveRelative);
+	personalPoem = File.readAllString(("../text-files/poet"++(index%10).asString++".txt").resolveRelative);
 	postln(personalPoem);
 	( // create an Event similar to a javascript object
 		// ----------------- variables
@@ -274,6 +259,20 @@ o = OSCFunc({
 
 // initialise sonification
 "sonification.scd".loadRelative;
+
+// Receive via OSC
+o = OSCdef(\caposc, {
+	arg msg, time, addr, recvPort;
+	//[msg, time, addr, recvPort].postln;
+
+	if(msg[4], {
+		~poets[msg[1]].updateState(true);
+	}, {
+		~poets[msg[1]].updateState(false);
+	});
+
+}, '/touched', nil, 7771);
+
 )
 
 // =========================================================== PLAYGROUND / TESTING
@@ -306,4 +305,11 @@ fork{
 var set = Set[2];
 set.findMatch(2);
 )
-	
+
+// test commands
+"festival --server".unixCmd;
+(
+var cmd, outputPath = ~poemTTSPath;
+cmd = "festival_client " ++ ~masterPoemPath ++ " --ttw --output "++ outputPath;
+cmd.systemCmd; // synchronous
+)

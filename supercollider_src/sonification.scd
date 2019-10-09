@@ -35,7 +35,9 @@
 	};
 };
 ~initSonification = { var winenv;
+
 	"festival --server".unixCmd;
+
 	winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
 	z = Buffer.sendCollection(s, winenv.discretize, 1);
 
@@ -257,16 +259,6 @@
 
 ~initSonification.();
 ~sonifyPoem.();
-(
-{
-	var  sig, mod, freq = ~degree53_to_freq.(~chord.choose%53 + (53*5), ~rootFreq), env;
-	env = Env.perc(0.001, 0.7, 1.0, [0, -2]).kr(2);
-	mod = SinOsc.ar(freq*(8/LFNoise0.kr(16).range(1, 16))) * freq;
-	sig = SinOsc.ar(freq + mod);
-	sig = Pan2.ar(sig, rrand(-1.0, 1.0)) * env * 0.1;
-	Out.ar(0, sig);
-}.play;
-)
 
 // (
 // Pbind(
