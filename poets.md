@@ -2,7 +2,7 @@
 
 A "poet" in this instance is a generative automatic poet that writes and edits this collaborative poem.
 
-## Additive poets
+## Additive poets (01 to 07)
 
 - Adds a sentence to the end of the poem. The sentence is randomly generated based on word lists.
 - Adds a sentence somewhere in the middle of the poem (not first or last, but anywhere else) using only words that have already been used.
@@ -13,7 +13,7 @@ A "poet" in this instance is a generative automatic poet that writes and edits t
 
 - Adds a noun after a different noun. The nouns have to be close in association.
 
-## Subtractive poets
+## Subtractive poets (08 to 12)
 
 - Removes 2 random words (not including punctuation).
 - Removes a sentence from the beginning of the poem.
