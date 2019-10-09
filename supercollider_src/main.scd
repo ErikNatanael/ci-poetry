@@ -42,7 +42,11 @@ o = OSCFunc({
 	arg msg, time, addr, recvPort;
 	[msg, time, addr, recvPort].postln;
 
-	~poets[msg[1]].updateState(msg[2]);
+	if(msg[4], {
+		~poets[msg[1]].updateState(true);
+	}, {
+		~poets[msg[1]].updateState(false);
+	});
 
 }, '/touched', nil, 7771);
 )
@@ -112,8 +116,8 @@ o = OSCFunc({
 
 		// ----------------- methods
 		// this method is called whenever a new sensor value is received
-		updateState: { | self, touchValue |
-			if(touchValue >= ~touchThreshold, {
+		updateState: { | self, touched |
+			if(touched, {
 				// the sensor is being touched
 				if(self.touched != true) {
 					self.touched = true;
