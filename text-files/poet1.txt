@@ -10,3 +10,5 @@ the people are not
 what one is
         it becomes
 it seeps into the 
+
+                zeros   and     ones
