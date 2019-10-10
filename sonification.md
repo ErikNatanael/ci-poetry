@@ -26,3 +26,12 @@ Start with 12 lines
 Use only variations of the same major (or possibly minor) chord where notes are placed in different octaves.
 Vary the amount of activity within the chord
 Empty lines have only the root note
+
+
+# Impressions from R1
+
+- Needs a bit more variation in it's demo state (turn certain parts on or off?)
+- Another soft variation sometimes
+- TTS is too aggressive and too unclear, needs to blend more with the rest if we're gonna keep it
+
+- Project the text with projector

@@ -35,7 +35,8 @@
 	};
 };
 ~initSonification = { var winenv;
-	"festival --server".unixCmd;
+	// start the festival server choosing a voice
+	"festival -b '(voice_cmu_us_slt_arctic_hts)' --server".unixCmd;
 	winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
 	z = Buffer.sendCollection(s, winenv.discretize, 1);
 
@@ -170,11 +171,10 @@
 };
 ~sonifyFailed = {};
 ~sonifyTouch = {
-	Synth(\bell, [\fs, ~degree53_to_freq.(~chord.choose%53 + (53*5), ~rootFreq), \t60, 4, \pitchy, 6, \amp, 0.1, \atk, 0.2]);
+	Synth(\bell, [\fs, ~degree53_to_freq.(~chord.choose%53 + (53*5), ~rootFreq), \t60, 4, \pitchy, 6, \amp, 0.04, \atk, 0.2]);
 };
 
 ~poemTTSPath = "sonified/poem.wav".resolveRelative;
-~ttsBuffer =
 ~sonifyPoem = {
 
 	// play chords in a sequence
@@ -182,10 +182,12 @@
 		loop { var time, amp = 1;
 			time = ~chordLengths[sequenceIndex];
 			~chord = ~chordSequence[sequenceIndex];
-			if(~newPoem == false) {
+			if(~newPoem == false, {
 				amp = 0.3;
 				time = time * 2;
-			};
+			}, {
+				~chord = ~chord - 53;
+			});
 			~launchChord.(time, amp);
 			time.wait;
 			sequenceIndex = sequenceIndex + 1;
@@ -201,10 +203,18 @@
 	if(~newPoem == false) { // ~newPoem is set to false when the last TTS is finished playing
 		~newPoem = true;
 		fork {
+			// Remove the old file
+			File.delete(outputPath);
+
 			// TTS generation of .wav file
 			// this requires the festival server to be started by running 'festival --server' in a terminal
 			cmd = "festival_client " ++ ~masterPoemPath ++ " --ttw --output "++ outputPath;
-			cmd.systemCmd; // synchronous
+			cmd.unixCmd; // asynchronous
+
+			// wait for the file to finish rendering
+			while({File.exists(outputPath) == false }, {
+				0.1.wait;
+			});
 
 			// read the TTS poem
 			~ttsBuffer = Buffer.read(s, ~poemTTSPath, 0, -1);
@@ -213,8 +223,9 @@
 				/*sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum));
 				sig = PitchShift.ar(sig, 0.2, 1.5);*/
 				pos = Line.kr(0, 1, BufSamples.kr(bufnum)/BufSampleRate.kr(bufnum) * 1.5, doneAction: 2);
-				sig = GrainBuf.ar(1, Impulse.kr(LFNoise1.kr(2).range(10, 100)), LFNoise1.kr(3).range(0.05, 0.2), bufnum, LFNoise1.kr(1).range(1.3, 1.8),
-					pos, 2, pan, envbuf);
+				//sig = GrainBuf.ar(1, Impulse.kr(LFNoise1.kr(2).range(30, 60)), LFNoise1.kr(3).range(0.15, 0.4), bufnum, LFNoise1.kr(1).range(1.3, 1.8),
+				//	pos, 2, pan, envbuf);
+				sig = PlayBuf.ar(1, bufnum, BufRateScale.ir(bufnum));
 				sig = Pan2.ar(sig);
 				SendTrig.kr(pos > 0.99, 1);
 				Out.ar(0, sig);
