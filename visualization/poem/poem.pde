@@ -62,6 +62,13 @@ void oscEvent(OscMessage theOscMessage) {
   print("### received an osc message.");
   print(" addrpattern: "+theOscMessage.addrPattern());
   println(" typetag: "+theOscMessage.typetag());
+  
+  if(theOscMessage.checkAddrPattern("/poem")==true) {
+    String poemString = theOscMessage.get(0).stringValue();
+    println(poemString);
+    String lines[] = poemString.split("\\r?\\n"); // split into lines
+    poem = lines;
+  }
 
   // We get a message every time the poem has been updated
   // If the there is an "update" message, make update true

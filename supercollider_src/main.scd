@@ -35,6 +35,17 @@ p = SerialPort(
 };
 )
 
+// Receive via OSC
+
+(
+o = OSCFunc({
+	arg msg, time, addr, recvPort;
+	[msg, time, addr, recvPort].postln;
+
+	~poets[msg[1]].updateState(msg[2]);
+
+}, '/touched', nil, 7771);
+)
 
 
 (
@@ -43,6 +54,8 @@ p = SerialPort(
 ~masterPoemPath = "master/poem.txt".resolveRelative;
 ~touchThreshold = 2000;
 ~delayUntilCommit = 3.0; // number of seconds of no touching until a change is committed to the master poem
+~processingOsc = NetAddr("127.0.0.1", 12000);
+
 
 // ----------------------------------------------------------- EDIT ACTIONS
 
@@ -83,7 +96,7 @@ p = SerialPort(
 	var folder = ("poet" ++ index.asString ++ "/").resolveRelative, personalPoem;
 	File.mkdir(folder); // creates the folder if it doesn't exist
 	// load the poem specific to this poet
-	personalPoem = File.readAllString(("../text-files/poet"++(index%10).asString++".txt").resolveRelative);
+	personalPoem = File.readAllString(("../text-files/poet"++(index%7).asString++".txt").resolveRelative);
 	postln(personalPoem);
 	( // create an Event similar to a javascript object
 		// ----------------- variables
@@ -101,8 +114,8 @@ p = SerialPort(
 
 		// ----------------- methods
 		// this method is called whenever a new sensor value is received
-		updateState: { | self, touched |
-			if(touched, {
+		updateState: { | self, touchValue |
+			if(touchValue >= ~touchThreshold, {
 				// the sensor is being touched
 				if(self.touched != true) {
 					self.touched = true;
@@ -232,6 +245,8 @@ p = SerialPort(
 		~masterPoemText = masterPoem;
 		// trigger a new sonification if the commit passed
 		~updatePoemSonification.();
+		// send poem to processing for visualisation
+		~processingOsc.sendMsg("/poem", masterPoem);
 	}, {
 
 		// if the commit fails:
@@ -259,20 +274,6 @@ p = SerialPort(
 
 // initialise sonification
 "sonification.scd".loadRelative;
-
-// Receive via OSC
-o = OSCdef(\caposc, {
-	arg msg, time, addr, recvPort;
-	//[msg, time, addr, recvPort].postln;
-
-	if(msg[4], {
-		~poets[msg[1]].updateState(true);
-	}, {
-		~poets[msg[1]].updateState(false);
-	});
-
-}, '/touched', nil, 7771);
-
 )
 
 // =========================================================== PLAYGROUND / TESTING
@@ -305,11 +306,4 @@ fork{
 var set = Set[2];
 set.findMatch(2);
 )
-
-// test commands
-"festival --server".unixCmd;
-(
-var cmd, outputPath = ~poemTTSPath;
-cmd = "festival_client " ++ ~masterPoemPath ++ " --ttw --output "++ outputPath;
-cmd.systemCmd; // synchronous
-)
+	

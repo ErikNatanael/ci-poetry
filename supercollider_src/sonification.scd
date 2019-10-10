@@ -35,14 +35,8 @@
 	};
 };
 ~initSonification = { var winenv;
-<<<<<<< HEAD
 	// start the festival server choosing a voice
 	"festival -b '(voice_cmu_us_slt_arctic_hts)' --server".unixCmd;
-=======
-
-	"festival --server".unixCmd;
-
->>>>>>> 40a1716e9c867d7a0d11d1aecd5c6faa611777f5
 	winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
 	z = Buffer.sendCollection(s, winenv.discretize, 1);
 
@@ -225,14 +219,22 @@
 			// read the TTS poem
 			~ttsBuffer = Buffer.read(s, ~poemTTSPath, 0, -1);
 			s.sync();
-			{ var sig, bufnum = ~ttsBuffer, envbuf = z, pan = 0, pos;
+			{ var sig, bufnum = ~ttsBuffer, envbuf = z, pan = 0, pos, cutfreq = [350, 1000, 100];
 				/*sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum));
 				sig = PitchShift.ar(sig, 0.2, 1.5);*/
-				pos = Line.kr(0, 1, BufSamples.kr(bufnum)/BufSampleRate.kr(bufnum) * 1.5, doneAction: 2);
-				//sig = GrainBuf.ar(1, Impulse.kr(LFNoise1.kr(2).range(30, 60)), LFNoise1.kr(3).range(0.15, 0.4), bufnum, LFNoise1.kr(1).range(1.3, 1.8),
-				//	pos, 2, pan, envbuf);
-				sig = PlayBuf.ar(1, bufnum, BufRateScale.ir(bufnum));
+				pos = Line.kr(0, 1, BufSamples.kr(bufnum)/BufSampleRate.kr(bufnum) * 1.3, doneAction: 2);
+				sig = GrainBuf.ar(1, Impulse.kr(LFNoise1.kr(2).range(30, 60)), LFNoise1.kr(3).range(0.15, 0.4), bufnum, LFNoise1.kr(1).range(0.9, 1.1),
+					pos, 2, pan, envbuf);
+				//sig = PlayBuf.ar(1, bufnum, BufRateScale.ir(bufnum));
+				sig = LPF.ar(sig, 4000);
+				sig = HPF.ar(sig, 100);
+				sig = BPeakEQ.ar(sig, 1500, 0.2, 10);
+				cutfreq.do{|cut|
+					sig = BPeakEQ.ar(sig, cut, 0.8, -10);
+				};
+				cutfreq.poll;
 				sig = Pan2.ar(sig);
+				sig = JPverb.ar(sig, 0.3, 0.0, 0.5, 0.1, 0.2, 1, 0.5);
 				SendTrig.kr(pos > 0.99, 1);
 				Out.ar(0, sig);
 			}.play;
@@ -274,6 +276,16 @@
 
 ~initSonification.();
 ~sonifyPoem.();
+(
+{
+	var  sig, mod, freq = ~degree53_to_freq.(~chord.choose%53 + (53*5), ~rootFreq), env;
+	env = Env.perc(0.001, 0.7, 1.0, [0, -2]).kr(2);
+	mod = SinOsc.ar(freq*(8/LFNoise0.kr(16).range(1, 16))) * freq;
+	sig = SinOsc.ar(freq + mod);
+	sig = Pan2.ar(sig, rrand(-1.0, 1.0)) * env * 0.1;
+	Out.ar(0, sig);
+}.play;
+)
 
 // (
 // Pbind(
