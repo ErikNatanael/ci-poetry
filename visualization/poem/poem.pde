@@ -4,7 +4,6 @@ import netP5.*;
 OscP5 oscP5;
 NetAddress myRemoteLocation;
 
-boolean update = false;
 String[] poem;
 
 void setup() {
@@ -28,19 +27,6 @@ void setup() {
 void draw() {
   background(0);  
 
-  if (update) {
-
-    poem = loadStrings("poem.txt");
-    println("there are " + poem.length + " lines");
-
-    // print text
-    for (int i = 0; i < poem.length; i++) {
-      println(poem[i]);
-    }
-
-    update = false;
-  }
-
   // Draw text
   if (poem!=null) {
     // If the poem exists, draw the current poem
@@ -51,8 +37,12 @@ void draw() {
 }
 
 void mousePressed() {
-  // Simulates an incoming message
-  update = true;
+  // Simulates a poem message
+  poem = new String[]{"decomposing,", "a major leap", "in inattention", "people’s ideas for inventions are constrained", "?¿", " ", "eternal growth - infinite", "eclipsed within itself", "what is innovative anymore"};
+  // Print poem to debug
+  for (int i = 0; i < poem.length; i++) {
+    println(poem[i]);
+  }
 }
 
 
@@ -62,14 +52,11 @@ void oscEvent(OscMessage theOscMessage) {
   print("### received an osc message.");
   print(" addrpattern: "+theOscMessage.addrPattern());
   println(" typetag: "+theOscMessage.typetag());
-  
-  if(theOscMessage.checkAddrPattern("/poem")==true) {
+
+  if (theOscMessage.checkAddrPattern("/poem")==true) {
     String poemString = theOscMessage.get(0).stringValue();
-    println(poemString);
+    //println(poemString);
     String lines[] = poemString.split("\\r?\\n"); // split into lines
     poem = lines;
   }
-
-  // We get a message every time the poem has been updated
-  // If the there is an "update" message, make update true
 }
