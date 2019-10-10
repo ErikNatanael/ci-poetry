@@ -1,4 +1,5 @@
 noisy tesselation
+<<<<<<< HEAD
 dynamic host configuration protocol
 application program interface
 - change cannot be requested
@@ -8,16 +9,33 @@ of a togetherness
 remind me, i am my own!
                             blends in
 forgetful breaks;
+=======
+struggling  ,
+application program interface
+change is action
+             my interface
+
+flux of broken data
+remind me, i am my own!
+                            blends in
+What rights
+>>>>>>> 40a1716e9c867d7a0d11d1aecd5c6faa611777f5
 continuous integration
         how do you fit 
 instant feedback
 for
     true or false
+<<<<<<< HEAD
             
 
 for
+=======
+            there is an and
+             is a portal to me, to my being
+application program interface
+>>>>>>> 40a1716e9c867d7a0d11d1aecd5c6faa611777f5
 
 what one is
 ripples through
-virtual private network
+                    if
 Swifly erases the wrongs
