@@ -42,13 +42,13 @@ o = OSCFunc({
 	arg msg, time, addr, recvPort;
 	[msg, time, addr, recvPort].postln;
 
-	~poets[msg[1]].updateState(msg[2]);
+	~poets[msg[1]].updateState(msg[4]);
 
 }, '/touched', nil, 7771);
-)
 
 
-(
+
+
 ~wordList = ["computer", "night", "git", "far", "away", "get", "got", "gat", "stream", "fall"];
 ~masterPoemLocked = false; // is set to true while a poet is committing a change to the master poem
 ~masterPoemPath = "master/poem.txt".resolveRelative;
@@ -115,8 +115,8 @@ o = OSCFunc({
 
 		// ----------------- methods
 		// this method is called whenever a new sensor value is received
-		updateState: { | self, touchValue |
-			if(touchValue >= ~touchThreshold, {
+		updateState: { | self, touched |
+			if(touched, {
 				// the sensor is being touched
 				if(self.touched != true) {
 					self.touched = true;

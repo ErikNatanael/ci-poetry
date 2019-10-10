@@ -253,10 +253,11 @@
 				cutfreq.do{|cut|
 					sig = BPeakEQ.ar(sig, cut, 0.8, -10);
 				};
-				sig = Pan2.ar(sig * 2);
-				sig = sig * ({Demand.kr(Dust.kr(LFNoise1.kr(1/2).range(5, 20)) + Impulse.kr(0), 0, Dseq([1, 0], inf))}!2);
+				sig = FreeVerb.ar(sig, 0.2);
+				sig = (sig*0.5) + (sig * (Demand.kr(Dust.kr(LFNoise1.kr(1/2).range(5, 20)) + Impulse.kr(0), 0, Dseq([1, 0], inf))) * 0.5);
 				sig = sig * LFNoise2.kr(1).range(0.1, 1.0) * XLine.kr(0.5, 1.0, 1);
-				sig = JPverb.ar(sig, 0.3, 0.0, 0.5, 0.1, 0.2, 1, 0.5);
+				sig = Pan2.ar(sig * 2);
+
 				SendTrig.kr(pos > 0.99, 1);
 				Out.ar(0, sig);
 			}.play;
