@@ -178,20 +178,41 @@
 ~sonifyPoem = {
 
 	// play chords in a sequence
-	{ var sequenceIndex = 0;
+	{ var sequenceIndex = 0, backgroundOctave = 0, demoArpeggio = false;
 		loop { var time, amp = 1;
 			time = ~chordLengths[sequenceIndex];
 			~chord = ~chordSequence[sequenceIndex];
 			if(~newPoem == false, {
-				amp = 0.3;
+				amp = 0.5;
 				time = time * 2;
+				~chord = ~chord + (53 * backgroundOctave);
+				if(rrand(0.0, 1.0) > 0.9) {
+					backgroundOctave = [0, -1, -2].choose;
+				};
+				if(demoArpeggio && (rrand(0.0, 1.0) > 0.3)) {
+					{
+						var notes = ~chord.collect{|degree| ~degree53_to_freq.(degree, ~rootFreq) }, speed = [1/4, 1/6, 1/8, 1/7].choose;
+						notes = notes.sort;
+						Pbind(\instrument, \sineperc,
+							\freq, Pseq(notes) * 32,
+							\dur, Pseq([speed], inf),
+							\atk, 0.2,
+							\rel, 2,
+							\amp, Pgeom(0.2, 0.6),
+						).play
+					}.fork;
+				};
 			}, {
 				~chord = ~chord - 53;
+				time = time * 1.5;
 			});
 			~launchChord.(time, amp);
 			time.wait;
 			sequenceIndex = sequenceIndex + 1;
-			if(sequenceIndex >= ~chordSequence.size) { sequenceIndex = 0; };
+			if(sequenceIndex >= ~chordSequence.size) {
+				sequenceIndex = 0;
+				demoArpeggio = demoArpeggio.not;
+			};
 		}
 	}.fork;
 };
@@ -232,8 +253,9 @@
 				cutfreq.do{|cut|
 					sig = BPeakEQ.ar(sig, cut, 0.8, -10);
 				};
-				cutfreq.poll;
-				sig = Pan2.ar(sig);
+				sig = Pan2.ar(sig * 2);
+				sig = sig * ({Demand.kr(Dust.kr(LFNoise1.kr(1/2).range(5, 20)) + Impulse.kr(0), 0, Dseq([1, 0], inf))}!2);
+				sig = sig * LFNoise2.kr(1).range(0.1, 1.0) * XLine.kr(0.5, 1.0, 1);
 				sig = JPverb.ar(sig, 0.3, 0.0, 0.5, 0.1, 0.2, 1, 0.5);
 				SendTrig.kr(pos > 0.99, 1);
 				Out.ar(0, sig);
