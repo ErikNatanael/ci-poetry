@@ -52,6 +52,7 @@ o = OSCFunc({
 ~wordList = ["computer", "night", "git", "far", "away", "get", "got", "gat", "stream", "fall"];
 ~masterPoemLocked = false; // is set to true while a poet is committing a change to the master poem
 ~masterPoemPath = "master/poem.txt".resolveRelative;
+~historyFolderPath = "history/".resolveRelative;
 ~touchThreshold = 2000;
 ~delayUntilCommit = 3.0; // number of seconds of no touching until a change is committed to the master poem
 ~processingOsc = NetAddr("127.0.0.1", 12000);
@@ -242,6 +243,8 @@ o = OSCFunc({
 		};
 		// save master poem to disk
 		File.use(~masterPoemPath, "w", { |f| f.write(masterPoem) });
+		// also save a timestamped version to keep a version history
+		File.use(~historyFolderPath ++ (Date.localtime.asString.replace(" ", "_")) ++".txt", "w", { |f| f.write(masterPoem) });
 		~masterPoemText = masterPoem;
 		// trigger a new sonification if the commit passed
 		~updatePoemSonification.();
@@ -306,4 +309,10 @@ fork{
 var set = Set[2];
 set.findMatch(2);
 )
-	
+
+~processingOsc.sendMsg("/poem", ~masterPoemText);
+
+
+// timestamp
+Date.localtime
+(~historyFolderPath ++ (Date.localtime.asString.replace(" ", "_")) ++".txt").postln
