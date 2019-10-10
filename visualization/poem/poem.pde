@@ -11,16 +11,11 @@ void setup() {
   frameRate(25);
   /* start oscP5, listening for incoming messages at port 12000 */
   oscP5 = new OscP5(this, 12000);
-
-  /* myRemoteLocation is a NetAddress. a NetAddress takes 2 parameters,
-   * an ip address and a port number. myRemoteLocation is used as parameter in
-   * oscP5.send() when sending osc packets to another computer, device, 
-   * application. usage see below. for testing purposes the listening port
-   * and the port of the remote location address are the same, hence you will
-   * send messages back to this sketch.
-   */
   myRemoteLocation = new NetAddress("127.0.0.1", 12000);
-  textSize(32);
+
+  PFont wask;
+  wask = createFont("wask.ttf", 32);
+  textFont(wask);
 }
 
 
@@ -31,7 +26,7 @@ void draw() {
   if (poem!=null) {
     // If the poem exists, draw the current poem
     for (int i = 0; i < poem.length; i++) {
-      text(poem[i], 10, 100+i*50);
+      text(poem[i], 100, 100+i*50);
     }
   }
 }
