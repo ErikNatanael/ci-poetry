@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 noisy tesselation
 dynamic host configuration protocol
 application program interface
@@ -22,28 +21,3 @@ what one is
 
 virtual private network
 Swifly erases the wrongs
-=======
-“”
-¨¨.¨¨
-“”
-        ;
-As we move on,
-eternal growth - infinite
-#
-^^^
-drifting into the night
-decomposing,
-a major leap
-    in inattention
-people’s ideas for inventions are constrained
-
-?¿
-eternal growth - infinite
-eclipsed within itself
-what is innovative anymore
-
-what one is
-...
-requesting a change 
-``
->>>>>>> 40a1716e9c867d7a0d11d1aecd5c6faa611777f5
