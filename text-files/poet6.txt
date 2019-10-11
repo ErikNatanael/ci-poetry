@@ -7,3 +7,12 @@ hyperText transport protocol secure
 structured query language
 virtual private network
 continuous integration
+random access memory
+byte
+bit
+boot
+callback
+compile
+control
+concatenate
+destabilize
