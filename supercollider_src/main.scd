@@ -153,7 +153,7 @@ o = OSCFunc({
 							self.startSequence();
 						};
 						// sonify it
-						~sonifyTouch.();
+						~sonifyTouch.(self.index);
 					};
 				};
 			}, {

@@ -35,3 +35,8 @@ Empty lines have only the root note
 - TTS is too aggressive and too unclear, needs to blend more with the rest if we're gonna keep it
 
 - Project the text with projector
+
+
+# Trigger sounds
+
+Longer sounds that die out, one per each sensor.
