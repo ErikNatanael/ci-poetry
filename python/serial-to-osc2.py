@@ -22,9 +22,12 @@ i2c = busio.I2C(board.SCL, board.SDA)
 mpr121 = adafruit_mpr121.MPR121(i2c)
 
 # set the thresholds
-for channel in mpr121:
-    channel.threshold(10);
-    channel.release_threshold(10);
+for i in range(12):
+    print(mpr121[i].value)
+    print(mpr121[i])
+    print(mpr121[i].threshold)
+    mpr121[i].threshold = 18
+    mpr121[i].release_threshold = 18
 
 
 # Loop forever testing each input and printing when they're touched.
@@ -33,7 +36,7 @@ while True:
     msg = oscbuildparse.OSCMessage("/touched2", None, [mpr121.touched()])
     osc_send(msg, "supercollider")
     osc_process()
-    time.sleep(0.01)  # Small delay to keep from spamming output messages.
+    time.sleep(0.05)  # Small delay to keep from spamming output messages.
 
 
 # Properly close the system.

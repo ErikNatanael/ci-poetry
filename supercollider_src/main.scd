@@ -42,14 +42,35 @@ p = SerialPort(
 ~sensorThreshold = 12;
 o = OSCFunc({
 	arg msg, time, addr, recvPort, change, filterAmount = 0.9;
-	if(msg[1] == 0) {[msg, time, addr, recvPort].postln; };
+	// if(msg[1] == 0) {[msg, time, addr, recvPort].postln; };
 	// low pass filter
 	change = msg[2] - ~sensorValues[msg[1]];
 	~sensorValues[msg[1]] = (~sensorValues[msg[1]]*filterAmount) + (change * (1-filterAmount));
 
+	if(msg[1] == 0) { ~sensorValues[0].postln; };
+
 	~poets[msg[1]].updateState(~sensorValues[msg[1]]<~sensorThreshold);
 
 }, '/touched', nil, 7771);
+
+o = OSCFunc({
+	arg msg, time, addr, recvPort, touched, sensors = false!12;
+	// if(msg[1] == 0) {[msg, time, addr, recvPort].postln; };
+	// low pass filter
+
+	// check if each bit is set
+	12.do { arg i;
+		if((msg[1] & (1 << i)) != 0) {
+			sensors[i] = true;
+		}
+	};
+
+	sensors[0].postln;
+
+	sensors.do{ arg state, i;
+		~poets[i].updateState(state);
+	};
+}, '/touched2', nil, 7771);
 
 
 
