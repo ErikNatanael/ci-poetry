@@ -43,7 +43,7 @@ while True:
         msg = oscbuildparse.OSCMessage("/touched", None, [i, mpr121.filtered_data(i), mpr121.baseline_data(i), mpr121[i].value])
         osc_send(msg, "supercollider")
         osc_process()
-    time.sleep(0.05)  # Small delay to keep from spamming output messages.
+    time.sleep(0.01)  # Small delay to keep from spamming output messages.
 
 
 # Properly close the system.
