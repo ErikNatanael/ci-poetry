@@ -65,7 +65,7 @@ o = OSCFunc({
 		}
 	};
 
-	sensors[0].postln;
+	if(sensors[0]) {"Touched 0".postln; };
 
 	sensors.do{ arg state, i;
 		~poets[i].updateState(state);

@@ -23,11 +23,10 @@ mpr121 = adafruit_mpr121.MPR121(i2c)
 
 # set the thresholds
 for i in range(12):
-    print(mpr121[i].value)
-    print(mpr121[i])
     print(mpr121[i].threshold)
     mpr121[i].threshold = 18
     mpr121[i].release_threshold = 18
+    print(mpr121[i].threshold)
 
 
 # Loop forever testing each input and printing when they're touched.
