@@ -15,7 +15,7 @@ void setup() {
   myRemoteLocation = new NetAddress("127.0.0.1", 12000);
 
   PFont wask;
-  wask = createFont("wask.ttf", 38);
+  wask = createFont("wask.ttf", 32);
   textFont(wask);
 }
 
@@ -32,17 +32,15 @@ void draw() {
     for (int i = 0; i < poem.length; i++) {
       if (col==1) {
         xpos = 100;
-        ypos = 100+i*50;
+        ypos = 100+i*40;
         lastLine = i;
         if (ypos>height-100)
           col=2;
       }
       if (col==2) {
         xpos = width/2;
-        ypos = 100+(i-lastLine)*50;
+        ypos = 100+(i-lastLine)*40;
       }
-
-      println(xpos, ypos);
       text(poem[i], xpos, ypos);
     }
   }
@@ -57,6 +55,10 @@ void mousePressed() {
   }
 }
 
+void failure(){
+// fail animation
+
+}
 
 /* incoming osc message are forwarded to the oscEvent method. */
 void oscEvent(OscMessage theOscMessage) {
