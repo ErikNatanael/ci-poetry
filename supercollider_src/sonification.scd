@@ -15,7 +15,7 @@
 ~chordSequence = List[[0, 31, 53, 70]];
 ~chordLengths = List[1];
 ~chord = [ 0, 31, 53, 70 ];
-~launchChord = { | length, amp = 1 |
+~launchChord = { | length, amp = 1, lowpass = 19000 |
 	~padSynths = ~chord.collect{ |degree|
 		Synth(\osc, [
 			\freq, ~degree53_to_freq.value(degree + (53*4), ~rootFreq),
@@ -25,6 +25,7 @@
 			\c0, exprand(1, 2),
 			\c1, exprand(3, 6).neg,
 			\detune, rrand(0.03, 0.1),
+			\lowpass, lowpass,
 			\buf, ~wt_buf[0..2].choose,
 			\amp, 0.05 * amp,
 			\pan, rrand(-0.5, 0.5),
@@ -78,7 +79,7 @@
 	SynthDef(\osc, {
 		arg buf=0, freq=200, detune=0.2,
 		amp=0.2, pan=0, out=0, rout=0, rsend=(-20),
-		atk=0.01, sus=1, rel=0.01, c0=1, c1=(-1);
+		atk=0.01, sus=1, rel=0.01, c0=1, c1=(-1), lowpass = 19000;
 		var sig, env, detuneCtrl;
 		env = EnvGen.ar(
 			Env([0,1,1,0],[atk,sus,rel],[c0,0,c1]),
@@ -93,6 +94,7 @@
 		sig = Splay.ar(sig); //spread 8 signals over stereo field
 		sig = LeakDC.ar(sig); //remove DC bias
 		sig = Balance2.ar(sig[0], sig[1], pan, amp); //L/R balance (pan)
+		sig = LPF.ar(sig, lowpass);
 		sig = sig * env;
 		Out.ar(out, sig);
 		Out.ar(rout, sig * rsend.dbamp); //"post-fader" send to reverb
@@ -324,7 +326,7 @@
 ~sonifyPoem = {
 
 	// play chords in a sequence
-	{ var sequenceIndex = 0, backgroundOctave = 0, demoArpeggio = false;
+	{ var sequenceIndex = 0, backgroundOctave = 0, demoArpeggio = false, lowpass = 19000;
 		loop { var time, amp = 1;
 			time = ~chordLengths[sequenceIndex];
 			~chord = ~chordSequence[sequenceIndex];
@@ -335,6 +337,11 @@
 				if(rrand(0.0, 1.0) > 0.9) {
 					backgroundOctave = [0, -1, -2].choose;
 				};
+				// bring lowpass down slowly
+				lowpass = lowpass * 0.95;
+				if(lowpass < 1000) {lowpass = 1000; };
+				lowpass.postln;
+
 				if(demoArpeggio && (rrand(0.0, 1.0) > 0.3)) {
 					{
 						var notes = ~chord.collect{|degree| ~degree53_to_freq.(degree, ~rootFreq) }, speed = [1/4, 1/6, 1/8, 1/7].choose;
@@ -351,8 +358,9 @@
 			}, {
 				~chord = ~chord - 53;
 				time = time * 1.5;
+				lowpass = 19000;
 			});
-			~launchChord.(time, amp);
+			~launchChord.(time, amp, lowpass);
 			time.wait;
 			sequenceIndex = sequenceIndex + 1;
 			if(sequenceIndex >= ~chordSequence.size) {
@@ -445,7 +453,7 @@
 
 ~initSonification.();
 ~sonifyPoem.();
-
+~launchChord.(1, 0.3, 1000)
 
 // (
 // Pbind(

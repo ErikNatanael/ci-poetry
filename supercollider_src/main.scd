@@ -311,9 +311,9 @@ o = OSCFunc({
 (
 ~simulateTouch = { |index, delayTime|
 	{
-		~poets[index].updateState(~touchThreshold);
+		~poets[index].updateState(true);
 		delayTime.wait;
-		~poets[index].updateState(0);
+		~poets[index].updateState(false);
 	}.fork
 };
 )
@@ -327,7 +327,7 @@ fork{
 fork{
 	loop{
 		~simulateTouch.(rrand(0, 11), 0.5);
-		1.wait;
+		2.wait;
 	}
 }
 )
