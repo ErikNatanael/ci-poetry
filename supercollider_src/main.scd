@@ -38,8 +38,8 @@ p = SerialPort(
 // Receive via OSC
 
 (
-~sensorValues = 0!12;
-~sensorThreshold = 12;
+~sensorValues = 100!12;
+~sensorThreshold = 7;
 o = OSCFunc({
 	arg msg, time, addr, recvPort, change, filterAmount = 0.9;
 	// if(msg[1] == 0) {[msg, time, addr, recvPort].postln; };
@@ -47,7 +47,7 @@ o = OSCFunc({
 	change = msg[2] - ~sensorValues[msg[1]];
 	~sensorValues[msg[1]] = (~sensorValues[msg[1]]*filterAmount) + (change * (1-filterAmount));
 
-	if(msg[1] == 0) { ~sensorValues[0].postln; };
+	//if(msg[1] == 0) { ~sensorValues[0].postln; };
 
 	~poets[msg[1]].updateState(~sensorValues[msg[1]]<~sensorThreshold);
 
@@ -117,7 +117,7 @@ o = OSCFunc({
 
 
 // ----------------------------------------------------------- POET FACTORY
-~minTimeBetweenTouches = 1.0;
+~minTimeBetweenTouches = 0.5;
 // a pseudo-object factory to store poet info
 ~createPoet = { |index, wordList|
 	var folder = ("poet" ++ index.asString ++ "/").resolveRelative, personalPoem;
