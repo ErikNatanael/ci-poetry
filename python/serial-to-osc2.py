@@ -22,8 +22,10 @@ i2c = busio.I2C(board.SCL, board.SDA)
 mpr121 = adafruit_mpr121.MPR121(i2c)
 
 # set the thresholds
-mpr121.threshold(10);
-mpr121.release_threshold(10);
+for channel in mpr121:
+    channel.threshold(10);
+    channel.release_threshold(10);
+
 
 # Loop forever testing each input and printing when they're touched.
 while True:
