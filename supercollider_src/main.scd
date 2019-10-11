@@ -117,7 +117,7 @@ o = OSCFunc({
 
 
 // ----------------------------------------------------------- POET FACTORY
-~minTimeBetweenTouches = 0.5;
+~minTimeBetweenTouches = 1.0;
 // a pseudo-object factory to store poet info
 ~createPoet = { |index, wordList|
 	var folder = ("poet" ++ index.asString ++ "/").resolveRelative, personalPoem;
