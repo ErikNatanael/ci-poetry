@@ -21,17 +21,16 @@ i2c = busio.I2C(board.SCL, board.SDA)
 # Create MPR121 object.
 mpr121 = adafruit_mpr121.MPR121(i2c)
 
-# Note you can optionally change the address of the device:
-#mpr121 = adafruit_mpr121.MPR121(i2c, address=0x91)
+# set the thresholds
+mpr121.threshold(10);
+mpr121.release_threshold(10);
 
 # Loop forever testing each input and printing when they're touched.
 while True:
-    # Loop through all 12 inputs (0-11).
-    for i in range(12):
-        # Send the sensor data to SuperCollider
-        msg = oscbuildparse.OSCMessage("/touched", None, [i, mpr121.filtered_data(i), mpr121.baseline_data(i), mpr121[i].value])
-        osc_send(msg, "supercollider")
-        osc_process()
+    # Send the sensor data to SuperCollider
+    msg = oscbuildparse.OSCMessage("/touched2", None, [mpr121.touched()])
+    osc_send(msg, "supercollider")
+    osc_process()
     time.sleep(0.01)  # Small delay to keep from spamming output messages.
 
 
