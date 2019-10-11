@@ -40,9 +40,9 @@ p = SerialPort(
 (
 o = OSCFunc({
 	arg msg, time, addr, recvPort;
-	[msg, time, addr, recvPort].postln;
+	if(msg[1] == 0) {[msg, time, addr, recvPort].postln; };
 
-	~poets[msg[1]].updateState(msg[4]);
+	~poets[msg[1]].updateState(msg[2]<12);
 
 }, '/touched', nil, 7771);
 
