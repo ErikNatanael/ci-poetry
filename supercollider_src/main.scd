@@ -38,11 +38,16 @@ p = SerialPort(
 // Receive via OSC
 
 (
+~sensorValues = 0!12;
+~sensorThreshold = 12;
 o = OSCFunc({
-	arg msg, time, addr, recvPort;
+	arg msg, time, addr, recvPort, change, filterAmount = 0.9;
 	if(msg[1] == 0) {[msg, time, addr, recvPort].postln; };
+	// low pass filter
+	change = msg[2] - ~sensorValues[msg[1]];
+	~sensorValues[msg[1]] = (~sensorValues[msg[1]]*filterAmount) + (change * (1-filterAmount));
 
-	~poets[msg[1]].updateState(msg[2]<12);
+	~poets[msg[1]].updateState(~sensorValues[msg[1]]<~sensorThreshold);
 
 }, '/touched', nil, 7771);
 
@@ -91,7 +96,7 @@ o = OSCFunc({
 
 
 // ----------------------------------------------------------- POET FACTORY
-
+~minTimeBetweenTouches = 0.5;
 // a pseudo-object factory to store poet info
 ~createPoet = { |index, wordList|
 	var folder = ("poet" ++ index.asString ++ "/").resolveRelative, personalPoem;
@@ -119,14 +124,16 @@ o = OSCFunc({
 			if(touched, {
 				// the sensor is being touched
 				if(self.touched != true) {
-					self.touched = true;
-					self.touchStart = ~now.();
-					if(self.active != true) {
-						self.active = true;
-						self.startSequence();
+					if(~now.() - self.touchStart > ~minTimeBetweenTouches) {
+						self.touched = true;
+						self.touchStart = ~now.();
+						if(self.active != true) {
+							self.active = true;
+							self.startSequence();
+						};
+						// sonify it
+						~sonifyTouch.();
 					};
-					// sonify it
-					~sonifyTouch.();
 				};
 			}, {
 				// the sensor is not being touched
