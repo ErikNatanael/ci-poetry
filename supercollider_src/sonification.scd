@@ -199,13 +199,13 @@
 		2, {
 			{
 				var  sig, mod, freq = ~degree53_to_freq.(~chord.choose%53 + (53*8), ~rootFreq), env;
-				env = Env.perc(0.5, Rand(0.7, 1.2), 0.4, [0, -2]).kr(2);
+				env = Env.perc(0.5, Rand(0.7, 1.2), 0.4, [0, -4]).kr(2);
 				freq = XLine.kr(100, Rand(500, 4000), 1.7);
 				freq = Latch.kr(freq, Impulse.kr(10));
 				mod = SinOsc.ar(freq*(8/floor(LFNoise0.kr(15).range(4, 8)))) * freq * LFNoise0.kr(20).range(0.5, 2);
 				sig = SinOsc.ar(freq + mod);
 				sig = RLPFD.ar(PinkNoise.ar()*3, freq*4, 0.5, 0.4) * Decay.ar(Impulse.ar(10), 0.2) * sig;
-				sig = Pan2.ar(sig, rrand(-1.0, 1.0)) * env * 0.5;
+				sig = Pan2.ar(sig, rrand(-1.0, 1.0)) * env * 4;
 				Out.ar(0, sig);
 			}.play;
 		},
@@ -232,7 +232,7 @@
 			}.play;
 		},
 		4, {
-			Synth(\bell, [\fs, ~degree53_to_freq.(~chord.choose%53 + (53*5), ~rootFreq), \t60, 4, \pitchy, 6, \amp, 0.08, \atk, 0.6]);
+			Synth(\bell, [\fs, ~degree53_to_freq.(~chord.choose%53 + (53*5), ~rootFreq), \t60, 4, \pitchy, 6, \amp, 0.15, \atk, rrand(0.2, 0.35)]);
 		},
 		5, {
 			{
@@ -314,7 +314,7 @@
 
 				sig = SinOsc.ar([freq, freq*1.005, freq*1.01, freq*2.05, freq*3.1]) * Decay.ar(Impulse.ar(0) + DelayN.ar(Impulse.ar(0), 0.1, 0.1), Rand(0.4, 1)).lag(Rand(0.01, 0.1)) * 0.05;
 				sig = Mix(sig);
-				sig = Pan2.ar(sig, Rand(-1.0, 1.0));
+				sig = Pan2.ar(sig, Rand(-1.0, 1.0)) * 0.5;
 				Line.kr(0, 1, 2, doneAction: 2);
 				Out.ar(0, sig);
 			}.play;
