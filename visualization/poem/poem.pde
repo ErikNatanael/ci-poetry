@@ -10,9 +10,10 @@ float amt;
 int startColor, newColor;
 
 void setup() {
-  //fullScreen();
-  size(1280, 720);
-  frameRate(25);
+  fullScreen();
+  noCursor();
+  //size(1280, 720);
+  frameRate(10);
   /* start oscP5, listening for incoming messages at port 12000 */
   oscP5 = new OscP5(this, 12000);
   myRemoteLocation = new NetAddress("127.0.0.1", 12000);
@@ -29,12 +30,12 @@ void setup() {
 
 
 void draw() {
-  background(0);  
+  background(0); 
 
   // Draw fail animation
   if (fail) {
     background(lerpColor(startColor, newColor, amt));
-    amt += 0.01;
+    amt += 0.04;
     if (amt >= 1) {
       amt = 0.0;
       fail = false;
