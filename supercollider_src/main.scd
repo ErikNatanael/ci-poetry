@@ -123,7 +123,7 @@ o = OSCFunc({
 	var folder = ("poet" ++ index.asString ++ "/").resolveRelative, personalPoem;
 	File.mkdir(folder); // creates the folder if it doesn't exist
 	// load the poem specific to this poet
-	personalPoem = File.readAllString(("../text-files/poet"++(index%7).asString++".txt").resolveRelative);
+	personalPoem = File.readAllString(("../text-files/poet"++(index%12).asString++".txt").resolveRelative);
 	postln(personalPoem);
 	( // create an Event similar to a javascript object
 		// ----------------- variables
@@ -154,6 +154,7 @@ o = OSCFunc({
 						};
 						// sonify it
 						~sonifyTouch.(self.index);
+						~processingOsc.sendMsg("/edit");
 					};
 				};
 			}, {
@@ -184,6 +185,7 @@ o = OSCFunc({
 		},
 		startSequence: { | self | var masterPoem, localMasterFile;
 			"Start sequence".postln;
+			~processingOsc.sendMsg("/startedit");
 			// copy file from master poem into its own copy of the file
 			masterPoem = File.readAllString(~masterPoemPath);
 			~masterPoemText = masterPoem; // keep the master poem text up to date

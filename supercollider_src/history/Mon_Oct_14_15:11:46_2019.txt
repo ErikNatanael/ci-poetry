@@ -21,8 +21,3 @@ light information -
     i am defined
     true or false
 alternate echo!
-
-
-
-
-
