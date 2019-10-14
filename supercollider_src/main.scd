@@ -283,6 +283,7 @@ o = OSCFunc({
 		// if the commit fails:
 		// play a "commit failed" sound
 		("FAILED: commit from poet" + poet.index + "failed").postln;
+		~processingOsc.sendMsg("/fail");
 	});
 
 	// unlock the master poem lock
@@ -327,7 +328,7 @@ fork{
 fork{
 	loop{
 		~simulateTouch.(rrand(0, 11), 0.5);
-		2.wait;
+		0.5.wait;
 	}
 }
 )
