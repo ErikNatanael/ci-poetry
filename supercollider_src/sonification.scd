@@ -199,13 +199,13 @@
 		2, {
 			{
 				var  sig, mod, freq = ~degree53_to_freq.(~chord.choose%53 + (53*8), ~rootFreq), env;
-				env = Env.perc(0.5, Rand(0.7, 1.2), 0.4, [0, -2]).kr(2);
-				freq = XLine.kr(100, Rand(500, 4000), 1.7);
+				env = Env.perc(0.5, Rand(0.7, 1.4), 0.4, [3, -6]).kr(2);
+				freq = XLine.kr(500, Rand(1200, 6000), 1.7);
 				freq = Latch.kr(freq, Impulse.kr(10));
 				mod = SinOsc.ar(freq*(8/floor(LFNoise0.kr(15).range(4, 8)))) * freq * LFNoise0.kr(20).range(0.5, 2);
 				sig = SinOsc.ar(freq + mod);
 				sig = RLPFD.ar(PinkNoise.ar()*3, freq*4, 0.5, 0.4) * Decay.ar(Impulse.ar(10), 0.2) * sig;
-				sig = Pan2.ar(sig, rrand(-1.0, 1.0)) * env * 0.5;
+				sig = Pan2.ar(sig, rrand(-1.0, 1.0)) * env * 4.5;
 				Out.ar(0, sig);
 			}.play;
 		},
@@ -227,17 +227,17 @@
 				sig = Resonz.ar(WhiteNoise.ar(), freq, Line.kr(0.3, 0.03, 1.0))*3;
 				sig = Mix(sig);
 				sig = Pan2.ar(sig, rrand(-1.0, 1.0));
-				sig = sig * env * 0.1;
+				sig = sig * env * 0.25;
 				Out.ar(\out.kr(0), sig);
 			}.play;
 		},
 		4, {
-			Synth(\bell, [\fs, ~degree53_to_freq.(~chord.choose%53 + (53*5), ~rootFreq), \t60, 4, \pitchy, 6, \amp, 0.08, \atk, 0.6]);
+			Synth(\bell, [\fs, ~degree53_to_freq.(~chord.choose%53 + (53*5), ~rootFreq), \t60, 4, \pitchy, 6, \amp, 0.08, \atk, 0.01]);
 		},
 		5, {
 			{
 				var trig, sig, pan;
-				trig = Impulse.ar(Line.ar(Rand(3, 6), Rand(15, 40), 2));
+				trig = Impulse.ar(Line.ar(Rand(8, 11), Rand(15, 40), 2));
 				sig = Saw.ar([270, 2000, Rand(2000, 3400), Rand(3500, 4000)]) * 0.3 * Decay.ar(trig, Line.kr(0.03, 0.005, 2));
 				sig = Mix(sig);
 				sig = sig * Env.perc(0.01, 2).kr(2);
@@ -281,7 +281,7 @@
 
 				freq = freq * (Line.kr(0, 30, 2).floor + 1);
 				mod = SinOsc.ar(freq * Rand(0.5, 8.0)) * freq * Rand(0.5, 3.0);
-				sig = Pulse.ar(min(max(freq + mod, 20), 20000)) * 0.07;
+				sig = Pulse.ar(min(max(freq + mod, 20), 20000)) * 0.12;
 				sig = sig * Env.perc(0.1, 1.0).kr(2);
 				sig = Pan2.ar(sig, Rand(-1.0, 1.0));
 				Out.ar(0, sig);
@@ -290,10 +290,10 @@
 		9, {
 			{
 				var  sig, mod, freq = ~degree53_to_freq.(~chord.choose%53 + (53*8), ~rootFreq), env;
-				env = Env.perc(0.5, Rand(0.7, 1.2), 0.4, [0, -2]).kr(2);
+				env = Env.perc(0.001, Rand(0.7, 1.2), 0.4, [0, -2]).kr(2);
 				mod = SinOsc.ar(freq*(8/floor(LFNoise0.kr(6).range(4, 8)))) * freq * LFNoise0.kr(12).range(0.5, 2);
 				sig = SinOsc.ar(freq + mod);
-				sig = Pan2.ar(sig, rrand(-1.0, 1.0)) * env * 0.1;
+				sig = Pan2.ar(sig, rrand(-1.0, 1.0)) * env * 0.15;
 				Out.ar(0, sig);
 			}.play;
 		},

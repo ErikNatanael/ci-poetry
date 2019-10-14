@@ -10,8 +10,8 @@ float amt;
 int startColor, newColor;
 
 void setup() {
-  //fullScreen();
-  size(1280, 720);
+  fullScreen();
+  //size(1280, 720);
   frameRate(25);
   /* start oscP5, listening for incoming messages at port 12000 */
   oscP5 = new OscP5(this, 12000);
