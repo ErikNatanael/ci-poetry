@@ -6,6 +6,8 @@ NetAddress myRemoteLocation;
 
 String[] poem;
 boolean fail = false;
+boolean edit = false;
+boolean startedit = false;
 float amt;
 int startColor, newColor;
 
@@ -22,7 +24,7 @@ void setup() {
   wask = createFont("wask.ttf", 32);
   textFont(wask);
 
-  startColor = color(136, 109, 232);
+  //startColor = color(136, 109, 232);
   newColor = color(0, 0, 0);
   amt = 0;
   background(0);
@@ -41,6 +43,28 @@ void draw() {
       fail = false;
     }
   }
+
+  // draw edit animation
+  if (edit) {
+    background(lerpColor(startColor, newColor, amt));
+    amt += 0.3;
+    if (amt >= 1) {
+      amt = 0.0;
+      edit = false;
+    }
+  }
+  
+  
+  // draw startedit animation
+  if (startedit) {
+    background(lerpColor(startColor, newColor, amt));
+    amt += 0.03;
+    if (amt >= 1) {
+      amt = 0.0;
+      startedit = false;
+    }
+  }
+
 
   // Draw text
   if (poem!=null) {
@@ -76,8 +100,18 @@ void mousePressed() {
 
 // Test
 void keyPressed() {
-  if (key == ENTER)
+  if (key == ENTER) {
     fail = true;
+    startColor = color(184, 46, 76);
+  }
+  if (key == TAB) {
+    edit = true;
+    startColor = color(15, 15, 15);
+  }
+    if (key == BACKSPACE) {
+    //startedit = true;
+    //startColor = color(50, 20, 50);
+  }
 }
 
 /* incoming osc message are forwarded to the oscEvent method. */
@@ -95,5 +129,14 @@ void oscEvent(OscMessage theOscMessage) {
   }
   if (theOscMessage.checkAddrPattern("/fail")==true) {
     fail = true;
+    startColor = color(184, 46, 76);
+  }
+  if (theOscMessage.checkAddrPattern("/edit")==true) {
+    edit = true;
+    startColor = color(15, 15, 15);
+  }
+  if (theOscMessage.checkAddrPattern("/startedit")==true) {
+    //startedit = true;
+    //startColor = color(50, 50, 50);
   }
 }
