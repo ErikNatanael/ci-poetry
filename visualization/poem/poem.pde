@@ -106,7 +106,7 @@ void keyPressed() {
   }
   if (key == TAB) {
     edit = true;
-    startColor = color(15, 15, 15);
+    startColor = color(30, 30, 30);
   }
     if (key == BACKSPACE) {
     //startedit = true;
@@ -133,7 +133,7 @@ void oscEvent(OscMessage theOscMessage) {
   }
   if (theOscMessage.checkAddrPattern("/edit")==true) {
     edit = true;
-    startColor = color(15, 15, 15);
+    startColor = color(30, 30, 30);
   }
   if (theOscMessage.checkAddrPattern("/startedit")==true) {
     //startedit = true;
