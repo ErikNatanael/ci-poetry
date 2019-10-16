@@ -7,7 +7,6 @@ interface
 cyan
 magenta
 yellow
-black
 central
 processing
 unit
