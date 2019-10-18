@@ -38,8 +38,8 @@ p = SerialPort(
 // Receive via OSC
 
 (
-~sensorValues = 0!12;
-~sensorThreshold = 12;
+~sensorValues = 100!12;
+~sensorThreshold = 7;
 o = OSCFunc({
 	arg msg, time, addr, recvPort, change, filterAmount = 0.9;
 	// if(msg[1] == 0) {[msg, time, addr, recvPort].postln; };
@@ -47,7 +47,7 @@ o = OSCFunc({
 	change = msg[2] - ~sensorValues[msg[1]];
 	~sensorValues[msg[1]] = (~sensorValues[msg[1]]*filterAmount) + (change * (1-filterAmount));
 
-	if(msg[1] == 0) { ~sensorValues[0].postln; };
+	//if(msg[1] == 0) { ~sensorValues[0].postln; };
 
 	~poets[msg[1]].updateState(~sensorValues[msg[1]]<~sensorThreshold);
 
@@ -117,13 +117,13 @@ o = OSCFunc({
 
 
 // ----------------------------------------------------------- POET FACTORY
-~minTimeBetweenTouches = 1.0;
+~minTimeBetweenTouches = 0.5;
 // a pseudo-object factory to store poet info
 ~createPoet = { |index, wordList|
 	var folder = ("poet" ++ index.asString ++ "/").resolveRelative, personalPoem;
 	File.mkdir(folder); // creates the folder if it doesn't exist
 	// load the poem specific to this poet
-	personalPoem = File.readAllString(("../text-files/poet"++(index%7).asString++".txt").resolveRelative);
+	personalPoem = File.readAllString(("../text-files/poet"++(index%12).asString++".txt").resolveRelative);
 	postln(personalPoem);
 	( // create an Event similar to a javascript object
 		// ----------------- variables
@@ -154,6 +154,7 @@ o = OSCFunc({
 						};
 						// sonify it
 						~sonifyTouch.(self.index);
+						~processingOsc.sendMsg("/edit");
 					};
 				};
 			}, {
@@ -184,6 +185,7 @@ o = OSCFunc({
 		},
 		startSequence: { | self | var masterPoem, localMasterFile;
 			"Start sequence".postln;
+			~processingOsc.sendMsg("/startedit");
 			// copy file from master poem into its own copy of the file
 			masterPoem = File.readAllString(~masterPoemPath);
 			~masterPoemText = masterPoem; // keep the master poem text up to date
@@ -283,6 +285,7 @@ o = OSCFunc({
 		// if the commit fails:
 		// play a "commit failed" sound
 		("FAILED: commit from poet" + poet.index + "failed").postln;
+		~processingOsc.sendMsg("/fail");
 	});
 
 	// unlock the master poem lock
@@ -327,7 +330,7 @@ fork{
 fork{
 	loop{
 		~simulateTouch.(rrand(0, 11), 0.5);
-		2.wait;
+		0.5.wait;
 	}
 }
 )

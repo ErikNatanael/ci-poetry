@@ -1,13 +1,33 @@
-cascading style sheet
-application program interface
-cyan magenta yellow black
-central processing unit
-dynamic host configuration protocol
-hyperText transport protocol secure
-structured query language
-virtual private network
+cascading
+style
+sheet
+application
+program
+interface
+cyan
+magenta
+yellow
+central
+processing
+unit
+dynamic
+host
+configuration
+protocol
+hyperText
+transport
+protocol
+secure
+structured
+query
+language
+virtual
+private
+network
 continuous integration
-random access memory
+random
+access
+memory
 byte
 bit
 boot
@@ -16,3 +36,6 @@ compile
 control
 concatenate
 destabilize
+seize
+grasp
+normalize

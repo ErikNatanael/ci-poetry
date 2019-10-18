@@ -24,8 +24,8 @@ mpr121 = adafruit_mpr121.MPR121(i2c)
 # set the thresholds
 for i in range(12):
     print(mpr121[i].threshold)
-    mpr121[i].threshold = 18
-    mpr121[i].release_threshold = 18
+    mpr121[i].threshold = 3
+    mpr121[i].release_threshold = 5
     print(mpr121[i].threshold)
 
 
